@@ -1,0 +1,43 @@
+---
+  - name: install and configure tomcat
+    hosts: localhost
+    #vars:
+    #- warName: hello-8.0-20210826.114915-1.war
+    #- warRemotePath: /mnt/c/webapp
+    gather_facts: false
+    become: yes
+    tasks:
+      #- debug: var=pwd.stdout_lines
+      #- name: Download WAR to server
+      #  command: wget http://git-internal/release.war -O {{ warRemotePath }}/{{ warName }}
+      #- name: Stop Tomcat  
+       # command: /mnt/c/opt/tomcat/apache-tomcat-9.0.52/bin/shutdown.sh
+
+      - name: get current date
+        set_fact: bkpdate="{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"
+
+      - name: create directory with a date in name
+        file: path="/mnt/c/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/{{ bkpdate }}"
+          state=directory
+          mode=0755
+
+      #- name: Delete old war  
+        #command: rm -rf /mnt/c/opt/tomcat/apache-tomcat-9.0.52/webapps/hw
+
+      #- name: Copy the war file  
+        #copy:  
+          #src: /mnt/c/webapp/hello-8.0-20210826.114915-1.war 
+          #dest: /mnt/c/opt/tomcat/apache-tomcat-9.0.52/webapps/{{ bkpdate }} 
+       
+      - name: Unzip WAR file
+        unarchive:
+          src: /mnt/c/Users/vanda/Documents/agent/go-agent-21.2.0/pipelines/demopilot/hello-8.0-20210826.114915-1.war 
+          dest: /mnt/c/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/{{ bkpdate }}
+          remote_src: yes
+
+
+      #- name: Start Tomcat  
+       # command: /mnt/c/opt/tomcat/apache-tomcat-9.0.52/bin/startup.sh  
+
+      - debug: var=cp.stdout_lines
+
